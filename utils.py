@@ -23,6 +23,20 @@ def detect_multi_face(im, classifier=HAAR_ALT):
     return faces
 
 
-if __name__ == "__main__":
-    r = detect_multi_face('a.jpg')
+def imcut(im):
+    _h, _w = 833, 600   # 默认的剪切尺寸比
+    if isinstance(im, str):
+        im = cv2.imread(im)
+    h, w, _ = im.shape
+    ratio = min(h / _h, w / _w)
+    h, c = int(ratio * _h), int((w - ratio * _w) / 2)
+    im = im[:h, c:w-c]  # 扔掉底部或两侧
+    return im
+
+
+if __name__ == '__main__':
+    fn = 'a.jpg'
+    r = detect_multi_face(fn)
     dbg(r)
+    im = imcut(fn)
+    dbg(im.shape)
