@@ -1,8 +1,9 @@
 # coding: utf-8
 # 脱壳发型
 import hashlib
-import pathlib
 import json
+import os
+import pathlib
 
 import requests
 
@@ -91,19 +92,25 @@ def get_album_file():
 
 
 def imdonwload(fn, url):
+    fn = params['id']
+    fn = f'{PATH}/{fn}.png'
+    if os.path.isfile(fn):
+        print('downloaded:', fn)
+        return
+    print('downloading:', fn)
     try:
         r = requests.get(url, timeout=15)
         im = r.content
-        with open(f'{PATH}/{fn}.jpg', 'wb') as fp:
+        with open(fn, 'wb') as fp:
             fp.write(im)
-    except requests.exceptions.ReadTimeout, requests.exceptions.ConnectionError:
+    except (requests.exceptions.ReadTimeout, requests.exceptions.ConnectionError):
         pass
 
 
 def main():
     fp = open('album_file.txt', encoding='utf-8')
     lines = fp.readlines()
-    for line in lines[10891:]:
+    for line in lines:
         _, text = line.split('\t')
         text = json.loads(text)
         id = text['id']
@@ -111,8 +118,19 @@ def main():
         imdonwload(id, url)
 
 
-get_album_cate_top()
-get_album_cate()
-get_album_cate_files()
-get_album_file()
-main()
+def download_album_files():
+    for line in open('album_cate_files.txt', encoding='utf-8'):
+        _, _, text = line.split('\t')
+        text = json.loads(text)
+        for item in text['items']:
+            id = item["id"]
+            url = item['fileurl'][:-6]
+            imdonwload(id, url)
+
+
+# get_album_cate_top()
+# get_album_cate()
+# get_album_cate_files()
+# get_album_file()
+# main()
+download_album_files()

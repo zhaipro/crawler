@@ -26,5 +26,5 @@ for url in open('bobo.txt'):
         url = url[:-len(fn)] + fn[1:]
         fn = gen_fn(url)
         r = requests.get(url, headers=headers)
-        with open(f'{PATH}/{fn}.jpg', 'wb') as fp:
+        with open(f'{PATH}/{fn}', 'wb') as fp:
             fp.write(r.content)
